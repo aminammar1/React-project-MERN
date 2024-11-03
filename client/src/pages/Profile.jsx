@@ -4,7 +4,6 @@ export default function Profile() {
   const fileRef = useRef(null);
   const { currentUser } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
-  const [imageUrl, setImageUrl] = useState(currentUser.avatar);
 
   useEffect(() => {
     if (file) {
@@ -12,27 +11,8 @@ export default function Profile() {
     }
   }, [file]);
 
-  const handleFileUpload = async (file) => {
-    const url = `https://api.cloudinary.com/v1_1/${
-      import.meta.env.VITE_CLOUDINARY_NAME
-    }/image/upload`;
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append(
-      "upload_preset",
-      import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-    );
-
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      setImageUrl(data.secure_url);
-    } catch (error) {
-      console.error("Error uploading image:", error);
-    }
+  const handleFileUpload = (file) => {
+    
   };
 
   return (
@@ -48,7 +28,7 @@ export default function Profile() {
         />
         <img
           onClick={() => fileRef.current.click()}
-          src={imageUrl}
+          src={currentUser.avatar}
           alt=" profile"
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
