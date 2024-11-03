@@ -23,4 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 .env
-client/src/firebase.js
+/client/src/firebase.js
