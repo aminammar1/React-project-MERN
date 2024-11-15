@@ -60,8 +60,9 @@ export default function Signin() {
         >
           {loading ? "loading.... " : "Sign In "}
         </button>
-        <GoogleAuth />
       </form>
+      <GoogleAuth />
+
       <div className="flex gap-2 mt-5">
         <p> Dont have an account? </p>
         <Link to={"/sign-up"}>

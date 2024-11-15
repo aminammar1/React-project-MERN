@@ -1,24 +1,86 @@
-import { useSelector } from "react-redux";
-import { useRef, useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { Client, Storage } from "appwrite";
+import { updateAvatar } from "../user/userSlice";
+
 export default function Profile() {
   const fileRef = useRef(null);
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadMessage, setUploadMessage] = useState("");
+
+  // Initialize Appwrite Client
+  const client = useMemo(() => {
+    const appwriteClient = new Client();
+    appwriteClient
+      .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT)
+      .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID);
+    return appwriteClient;
+  }, []);
+
+  // Initialize Storage object once
+  const storage = useMemo(() => new Storage(client), [client]);
+
+  const handleFileUpload = useCallback(
+    async (file) => {
+      setIsUploading(true);
+      setUploadError(null);
+      setUploadProgress(0);
+      setUploadMessage("");
+
+      try {
+        const response = await storage.createFile(
+          import.meta.env.VITE_APPWRITE_BUCKET_ID,
+          "unique()",
+          file,
+          [],
+          (progress) => {
+            // Check progress and update accordingly
+            if (progress.total > 0) {
+              const progressPercent = Math.round(
+                (progress.loaded / progress.total) * 100
+              );
+              setUploadProgress(progressPercent);
+              console.log(`Progress: ${progressPercent}%`); // Check progress on every update
+            }
+          }
+        );
+
+        const avatarUrl = `${
+          import.meta.env.VITE_APPWRITE_ENDPOINT
+        }/storage/buckets/${import.meta.env.VITE_APPWRITE_BUCKET_ID}/files/${
+          response.$id
+        }/view?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`;
+        dispatch(updateAvatar(avatarUrl));
+        setUploadMessage("Image uploaded successfully");
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        setUploadError("Failed to upload file. Please try again.");
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [storage, dispatch]
+  );
 
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
     }
-  }, [file]);
+  }, [file, handleFileUpload]);
 
-  const handleFileUpload = (file) => {
-    
+  const handleSubmit = (e) => {
+    e.preventDefault();
   };
 
   return (
     <div className="p-3 max-w-lg mx-auto">
-      <h1 className="text-3xl text-center font-semibold my-7">Profile </h1>
-      <form className=" flex flex-col gap-4">
+      <h1 className="text-3xl text-center font-semibold my-7">Profile</h1>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <input
           onChange={(e) => setFile(e.target.files[0])}
           type="file"
@@ -29,34 +91,46 @@ export default function Profile() {
         <img
           onClick={() => fileRef.current.click()}
           src={currentUser.avatar}
-          alt=" profile"
+          alt="profile"
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
+        {isUploading ? (
+          <div className="text-black">Uploading... {uploadProgress}%</div>
+        ) : uploadMessage ? (
+          <div className="text-green-500">{uploadMessage}</div>
+        ) : null}
+        {uploadError && <p className="text-red-500">{uploadError}</p>}
         <input
           type="text"
-          placeholder="username"
+          placeholder="Username"
           id="username"
           className="border p-3 rounded-lg"
+          defaultValue={currentUser.username}
         />
         <input
-          type="text"
-          placeholder="email"
+          type="email"
+          placeholder="Email"
           id="email"
           className="border p-3 rounded-lg"
+          defaultValue={currentUser.email}
         />
         <input
           type="password"
-          placeholder="password"
+          placeholder="Password"
           id="password"
           className="border p-3 rounded-lg"
         />
-        <button className="bg-blue-500 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
-          update
+        <button
+          type="submit"
+          className="bg-blue-500 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          disabled={isUploading}
+        >
+          Update
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-gray-500">Delete Account</span>
-        <span className="text-gray-500"> Sign out </span>
+        <span className="text-gray-500 cursor-pointer">Delete Account</span>
+        <span className="text-gray-500 cursor-pointer">Sign out</span>
       </div>
     </div>
   );
