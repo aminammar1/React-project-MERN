@@ -37,17 +37,7 @@ export default function Profile() {
           import.meta.env.VITE_APPWRITE_BUCKET_ID,
           "unique()",
           file,
-          [],
-          (progress) => {
-            // Check progress and update accordingly
-            if (progress.total > 0) {
-              const progressPercent = Math.round(
-                (progress.loaded / progress.total) * 100
-              );
-              setUploadProgress(progressPercent);
-              console.log(`Progress: ${progressPercent}%`); // Check progress on every update
-            }
-          }
+          []
         );
 
         const avatarUrl = `${
