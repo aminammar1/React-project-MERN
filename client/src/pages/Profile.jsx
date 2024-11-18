@@ -1,17 +1,22 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { Client, Storage } from "appwrite";
-import { updateAvatar } from "../user/userSlice";
+import {
+  updateAvatar,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from "../user/userSlice";
 
 export default function Profile() {
   const fileRef = useRef(null);
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const [file, setFile] = useState(undefined);
-  const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadMessage, setUploadMessage] = useState("");
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [formData, setFormData] = useState({});
 
   // Initialize Appwrite Client
   const client = useMemo(() => {
@@ -27,17 +32,14 @@ export default function Profile() {
 
   const handleFileUpload = useCallback(
     async (file) => {
-      setIsUploading(true);
       setUploadError(null);
-      setUploadProgress(0);
       setUploadMessage("");
 
       try {
         const response = await storage.createFile(
           import.meta.env.VITE_APPWRITE_BUCKET_ID,
           "unique()",
-          file,
-          []
+          file
         );
 
         const avatarUrl = `${
@@ -46,12 +48,15 @@ export default function Profile() {
           response.$id
         }/view?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`;
         dispatch(updateAvatar(avatarUrl));
-        setUploadMessage("Image uploaded successfully");
+
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          avatar: avatarUrl,
+        }));
+        setUploadMessage("Image uploaded successfully.");
       } catch (error) {
         console.error("Error uploading file:", error);
         setUploadError("Failed to upload file. Please try again.");
-      } finally {
-        setIsUploading(false);
       }
     },
     [storage, dispatch]
@@ -63,8 +68,34 @@ export default function Profile() {
     }
   }, [file, handleFileUpload]);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (data.sucess === false) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+    }
   };
 
   return (
@@ -84,11 +115,7 @@ export default function Profile() {
           alt="profile"
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
-        {isUploading ? (
-          <div className="text-black">Uploading... {uploadProgress}%</div>
-        ) : uploadMessage ? (
-          <div className="text-green-500">{uploadMessage}</div>
-        ) : null}
+        {uploadMessage && <div className="text-green-500">{uploadMessage}</div>}
         {uploadError && <p className="text-red-500">{uploadError}</p>}
         <input
           type="text"
@@ -96,6 +123,7 @@ export default function Profile() {
           id="username"
           className="border p-3 rounded-lg"
           defaultValue={currentUser.username}
+          onChange={handleChange}
         />
         <input
           type="email"
@@ -103,25 +131,32 @@ export default function Profile() {
           id="email"
           className="border p-3 rounded-lg"
           defaultValue={currentUser.email}
+          onChange={handleChange}
         />
         <input
           type="password"
           placeholder="Password"
           id="password"
           className="border p-3 rounded-lg"
+          onChange={handleChange}
         />
         <button
           type="submit"
           className="bg-blue-500 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
-          disabled={isUploading}
+          disabled={loading}
         >
-          Update
+          {loading ? "Loading..." : "Update"}
         </button>
       </form>
       <div className="flex justify-between mt-5">
         <span className="text-gray-500 cursor-pointer">Delete Account</span>
         <span className="text-gray-500 cursor-pointer">Sign out</span>
       </div>
+      <p className="text-red-700 mt-5"> {error ? error : ""}</p>
+      <p className="text-green-700 mt-5">
+        {" "}
+        {updateSuccess ? "Profile updated successfully." : ""}
+      </p>
     </div>
   );
 }
