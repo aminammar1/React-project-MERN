@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Client, Storage } from "appwrite";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateListing() {
   const [files, setFiles] = useState([]);
@@ -14,7 +15,7 @@ export default function CreateListing() {
     bedrooms: 1,
     bathrooms: 1,
     regularPrice: 50,
-    discountedPrice: 50,
+    discountedPrice: 0,
     offer: false,
     parking: false,
     furnished: false,
@@ -24,6 +25,7 @@ export default function CreateListing() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   const client = new Client();
   client
@@ -129,6 +131,14 @@ export default function CreateListing() {
   const handelSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (formData.imageUrls.length < 1) {
+        setError("Please upload at least one image.");
+        return;
+      }
+      if (+formData.regularPrice < +formData.discountedPrice) {
+        setError("Regular price must be greater than discounted price.");
+        return;
+      }
       setLoading(true);
       setError(false);
       const res = await fetch("/api/listing/create", {
@@ -146,11 +156,13 @@ export default function CreateListing() {
       if (data.success === false) {
         setError(data.message);
       }
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
     }
   };
+
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">
@@ -282,21 +294,23 @@ export default function CreateListing() {
                 <span className="text-xs">($ / month)</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                id="discountedPrice"
-                min="50"
-                max="1000000"
-                className="border border-gray-300 p-3 rounded-lg"
-                onChange={handleChange}
-                checked={formData.discountedPrice}
-              />
-              <div className="flex flex-col items-center">
-                <p>Discounted Price</p>
-                <span className="text-xs">($ / month)</span>
+            {formData.offer && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  id="discountedPrice"
+                  min="0"
+                  max="1000000"
+                  className="border border-gray-300 p-3 rounded-lg"
+                  onChange={handleChange}
+                  checked={formData.discountedPrice}
+                />
+                <div className="flex flex-col items-center">
+                  <p>Discounted Price</p>
+                  <span className="text-xs">($ / month)</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col flex-1 gap-4">
@@ -349,7 +363,10 @@ export default function CreateListing() {
                 </button>
               </div>
             ))}
-          <button className="p-3 bg-green-500 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
+          <button
+            disabled={loading || uploading}
+            className="p-3 bg-green-500 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          >
             {loading ? "Loading..." : "Create Listing"}
           </button>
           {error && <p className="text-red-600">{error}</p>}
