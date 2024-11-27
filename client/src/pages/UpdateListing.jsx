@@ -20,7 +20,7 @@ export default function UpdateListing() {
     parking: false,
     furnished: false,
   });
-  console.log(formData);
+
   const [imageUploadError, setImageUploadError] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
