@@ -108,3 +108,18 @@ export const searchListings = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getSuggestions = async (req, res, next) => {
+  try {
+    const searchTerm = req.query.searchTerm || "";
+    const suggestions = await Listing.find({
+      name: { $regex: searchTerm, $options: "i" }, 
+    })
+      .limit(5) // Return only a few suggestions
+      .select("name"); // Return only the names for suggestions
+
+    return res.status(200).json(suggestions.map((item) => item.name));
+  } catch (err) {
+    next(err);
+  }
+};

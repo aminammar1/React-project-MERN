@@ -3,6 +3,7 @@ import {
   createListing,
   deleteListing,
   getListing,
+  getSuggestions,
   searchListings,
   updateListing,
 } from "../controllers/listing.controller.js";
@@ -15,5 +16,6 @@ router.delete("/delete/:id", verifyToken, deleteListing);
 router.post("/update/:id", verifyToken, updateListing);
 router.get("/getlisting/:id", getListing);
 router.get("/search", searchListings);
+router.get("/getSuggestions", getSuggestions);
 
 export default router;
