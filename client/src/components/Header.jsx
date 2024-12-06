@@ -1,4 +1,4 @@
-import { FaSearch, FaSignInAlt, FaUserCircle } from "react-icons/fa";
+import { FaSearch, FaSignInAlt } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
