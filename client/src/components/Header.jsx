@@ -119,11 +119,6 @@ export default function Header() {
             )}
           </Link>
         </nav>
-
-        {/* Mobile Menu Icon */}
-        <div className="sm:hidden flex items-center">
-          <FaUserCircle className="text-white text-2xl" />
-        </div>
       </div>
     </header>
   );
