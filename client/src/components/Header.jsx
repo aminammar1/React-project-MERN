@@ -92,7 +92,7 @@ export default function Header() {
         </form>
 
         {/* Navigation and User Profile */}
-        <nav className="hidden sm:flex gap-6 items-center">
+        <nav className=" flex gap-4 ">
           <Link
             to="/"
             className="text-white hover:text-indigo-300 transition-colors duration-300"
@@ -107,12 +107,12 @@ export default function Header() {
           </Link>
 
           {/* User Profile or Sign-in */}
-          <Link to="/profile" className="flex items-center">
+          <Link to="/profile">
             {currentUser ? (
               <img
                 src={currentUser.avatar}
                 alt="profile"
-                className="rounded-full h-10 w-10 object-cover border-2 border-white"
+                className="rounded-full h-7 w-7 object-cover "
               />
             ) : (
               <FaSignInAlt className="text-white text-2xl" />
