@@ -1,4 +1,4 @@
-import { FaSearch, FaSignInAlt } from "react-icons/fa";
+import { FaSearch, FaSignInAlt, FaTimes, FaBars } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
@@ -6,9 +6,14 @@ import { useState, useEffect } from "react";
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const [searchTerm, setSearch] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   const fetchSuggestions = async (value) => {
     try {
@@ -92,7 +97,7 @@ export default function Header() {
         </form>
 
         {/* Navigation and User Profile */}
-        <nav className=" flex gap-4 ">
+        <nav className="hidden sm:flex gap-6 items-center p-2">
           <Link
             to="/"
             className="text-white hover:text-indigo-300 transition-colors duration-300"
@@ -107,19 +112,64 @@ export default function Header() {
           </Link>
 
           {/* User Profile or Sign-in */}
-          <Link to="/profile">
+          <Link to="/profile" className="flex items-center">
             {currentUser ? (
               <img
                 src={currentUser.avatar}
                 alt="profile"
-                className="rounded-full h-7 w-7 object-cover "
+                className="rounded-full h-10 w-10 object-cover border-2 border-white"
               />
             ) : (
               <FaSignInAlt className="text-white text-2xl" />
             )}
           </Link>
         </nav>
+
+        {/* Mobile Menu Icon */}
+        <div className="lg:hidden flex items-center">
+          <button
+            onClick={toggleMenu}
+            className="text-white focus:outline-none"
+          >
+            {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="lg:hidden flex flex-col items-center bg-blue-800 text-white py-5">
+          <Link
+            to="/"
+            className="text-white hover:text-indigo-300 transition-colors duration-300 py-2"
+            onClick={toggleMenu}
+          >
+            Home
+          </Link>
+          <Link
+            to="/about"
+            className="text-white hover:text-indigo-300 transition-colors duration-300 py-2"
+            onClick={toggleMenu}
+          >
+            About
+          </Link>
+          <Link
+            to="/profile"
+            className="flex items-center py-2"
+            onClick={toggleMenu}
+          >
+            {currentUser ? (
+              <img
+                src={currentUser.avatar}
+                alt="profile"
+                className="rounded-full h-10 w-10 object-cover border-2 border-white"
+              />
+            ) : (
+              <FaSignInAlt className="text-white text-2xl" />
+            )}
+          </Link>
+        </div>
+      )}
     </header>
   );
 }
