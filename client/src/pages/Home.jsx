@@ -1,70 +1,70 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
-import SwiperCore from "swiper";
-import "swiper/css/bundle";
-import ListingItem from "../components/ListingItem";
+import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay } from 'swiper/modules'
+import SwiperCore from 'swiper'
+import 'swiper/css/bundle'
+import ListingItem from '../components/ListingItem'
 
 export default function Home() {
-  const [offreListings, setOffreListings] = useState([]);
-  const [saleListings, setSaleListings] = useState([]);
-  const [rentListings, setRentListings] = useState([]);
-  SwiperCore.use([Autoplay]);
+  const [offreListings, setOffreListings] = useState([])
+  const [saleListings, setSaleListings] = useState([])
+  const [rentListings, setRentListings] = useState([])
+  SwiperCore.use([Autoplay])
 
   useEffect(() => {
     const fetchOfferListings = async () => {
       try {
-        const response = await fetch("/api/listing/search?offer=true&limit=4");
-        const data = await response.json();
-        setOffreListings(data);
-        fetchRentListings();
+        const response = await fetch('/api/listing/search?offer=true&limit=4')
+        const data = await response.json()
+        setOffreListings(data)
+        fetchRentListings()
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
-    };
+    }
     const fetchRentListings = async () => {
       try {
-        const response = await fetch("/api/listing/search?type=rent&limit=4");
-        const data = await response.json();
-        setRentListings(data);
-        fetchSaleListings();
+        const response = await fetch('/api/listing/search?type=rent&limit=4')
+        const data = await response.json()
+        setRentListings(data)
+        fetchSaleListings()
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
-    };
+    }
     const fetchSaleListings = async () => {
       try {
-        const response = await fetch("/api/listing/search?type=sale&limit=4");
-        const data = await response.json();
-        setSaleListings(data);
+        const response = await fetch('/api/listing/search?type=sale&limit=4')
+        const data = await response.json()
+        setSaleListings(data)
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
-    };
+    }
 
-    fetchOfferListings();
-  }, []);
+    fetchOfferListings()
+  }, [])
 
   return (
     <div>
       {/* Top Section */}
       <div className="flex flex-col gap-6 p-28 px-3 max-w-6xl lg:text-6xl mx-auto">
-        <h1 className="text-slate-700 font-bold text-3xl lg:text-6xl">
-          Find your next <span className="text-slate-500">perfect</span>
+        <h1 className="text-yellow-600 font-bold text-3xl lg:text-6xl">
+          Find your next <span className="text-green-900">perfect</span>
           <br />
           place to live
         </h1>
-        <div className="text-gray-400 text-xs sm:text-sm">
+        <div className="text-gray-500 text-xs sm:text-sm">
           Amine Estate is the best place to find your next place to live.
           <br />
           We have the best properties and the best prices.
         </div>
         <Link
-          to={"/search"}
-          className="text-xs sm:text-sm text-blue-800 font-bold hover:underline"
+          to={'/search'}
+          className="text-xs sm:text-sm text-green-900 font-bold hover:underline"
         >
-          Lets get started...
+          Let’s get started...
         </Link>
       </div>
 
@@ -75,10 +75,10 @@ export default function Home() {
           offreListings.map((listing) => (
             <SwiperSlide key={listing._id}>
               <div
-                className="h-[500px]"
+                className="h-[500px] rounded-lg shadow-lg overflow-hidden"
                 style={{
                   background: `url(${listing.imageUrls[0]}) center no-repeat`,
-                  backgroundSize: "cover",
+                  backgroundSize: 'cover',
                 }}
               ></div>
             </SwiperSlide>
@@ -90,12 +90,12 @@ export default function Home() {
         {offreListings && offreListings.length > 0 && (
           <div>
             <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-600">
+              <h2 className="text-2xl font-semibold text-green-900">
                 Recent offers
               </h2>
               <Link
                 to="/search?offer=true"
-                className="text-blue-800 font-bold hover:underline"
+                className="text-green-900 font-bold hover:underline"
               >
                 See more
               </Link>
@@ -110,12 +110,12 @@ export default function Home() {
         {rentListings && rentListings.length > 0 && (
           <div>
             <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-600">
+              <h2 className="text-2xl font-semibold text-green-900">
                 Recent places for rent
               </h2>
               <Link
                 to="/search?type=rent"
-                className="text-blue-800 font-bold hover:underline"
+                className="text-green-900 font-bold hover:underline"
               >
                 See more places for rent
               </Link>
@@ -130,12 +130,12 @@ export default function Home() {
         {saleListings && saleListings.length > 0 && (
           <div>
             <div className="my-3">
-              <h2 className="text-2xl font-semibold text-slate-600">
+              <h2 className="text-2xl font-semibold text-green-900">
                 Recent sales
               </h2>
               <Link
                 to="/search?type=sale"
-                className="text-blue-800 font-bold hover:underline"
+                className="text-green-900 font-bold hover:underline"
               >
                 See more places for sale
               </Link>
@@ -149,5 +149,5 @@ export default function Home() {
         )}
       </div>
     </div>
-  );
+  )
 }
