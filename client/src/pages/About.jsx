@@ -1,14 +1,16 @@
+import { useTranslation } from 'react-i18next'
+
 export default function About() {
+  const { t } = useTranslation()
+
   return (
     <section className="bg-gray-50 py-20 px-6">
       <div className="max-w-4xl mx-auto text-center">
         <h1 className="text-4xl font-extrabold text-gray-800 mb-6">
-          About AmineEstate
+          {t('about.title')}
         </h1>
         <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-          At AmineEstate, we believe in making your property search seamless and
-          enjoyable. Whether you looking to buy or rent, we offer a curated
-          selection of the best properties at unbeatable prices.
+          {t('about.description')}
         </p>
         <div className="text-left space-y-6">
           <p className="text-gray-700 leading-loose">
@@ -24,5 +26,5 @@ export default function About() {
         </div>
       </div>
     </section>
-  );
+  )
 }

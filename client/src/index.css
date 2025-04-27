@@ -5,3 +5,38 @@
 body {
   background-color: rgb(241, 245, 241);
 }
+
+/* RTL Support for Arabic language */
+html[dir='rtl'] .swiper-button-next {
+  right: auto;
+  left: 10px;
+}
+
+html[dir='rtl'] .swiper-button-prev {
+  left: auto;
+  right: 10px;
+}
+
+html[dir='rtl'] .text-left {
+  text-align: right;
+}
+
+html[dir='rtl'] .text-right {
+  text-align: left;
+}
+
+html[dir='rtl'] .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+html[dir='rtl'] .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+/* RTL font adjustment */
+html[dir='rtl'] body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}

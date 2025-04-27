@@ -2,13 +2,14 @@ import { FaSearch, FaSignInAlt, FaTimes, FaBars, FaGlobe } from 'react-icons/fa'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user)
   const [searchTerm, setSearch] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [suggestions, setSuggestions] = useState([])
-  const [language, setLanguage] = useState('EN')
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -17,7 +18,10 @@ export default function Header() {
   }
 
   const toggleLanguage = () => {
-    setLanguage((prev) => (prev === 'EN' ? 'AR' : 'EN'))
+    const newLang = i18n.language === 'en' ? 'ar' : 'en'
+    i18n.changeLanguage(newLang)
+    // Update document direction for RTL support
+    document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr'
   }
 
   const fetchSuggestions = async (value) => {
@@ -61,6 +65,11 @@ export default function Header() {
     }
   }, [location.search])
 
+  // Set initial document direction based on language
+  useEffect(() => {
+    document.documentElement.dir = i18n.language === 'ar' ? 'rtl' : 'ltr'
+  }, [i18n.language])
+
   return (
     <header className="bg-gradient-to-r from-green-900 to-yellow-600 text-white shadow-lg sticky top-0 z-50">
       <div className="max-w-6xl mx-auto flex justify-between items-center py-5 px-4 sm:px-8">
@@ -78,7 +87,7 @@ export default function Header() {
         >
           <input
             type="text"
-            placeholder="Search properties..."
+            placeholder={t('header.search')}
             className="bg-transparent focus:outline-none w-full px-4 py-2 text-gray-700"
             onChange={handleInputChange}
             value={searchTerm}
@@ -107,13 +116,13 @@ export default function Header() {
             to="/"
             className="text-white hover:text-yellow-300 transition-colors duration-300"
           >
-            Home
+            {t('header.home')}
           </Link>
           <Link
             to="/about"
             className="text-white hover:text-yellow-300 transition-colors duration-300"
           >
-            About
+            {t('header.about')}
           </Link>
 
           {/* Language Switcher */}
@@ -122,7 +131,7 @@ export default function Header() {
             className="flex items-center gap-2 text-white hover:text-yellow-300 transition-colors duration-300"
           >
             <FaGlobe />
-            {language}
+            {i18n.language === 'en' ? 'EN' : 'AR'}
           </button>
 
           {/* User Profile or Sign-in */}
@@ -158,20 +167,20 @@ export default function Header() {
             className="text-white hover:text-yellow-300 transition-colors duration-300 py-2"
             onClick={toggleMenu}
           >
-            Home
+            {t('header.home')}
           </Link>
           <Link
             to="/about"
             className="text-white hover:text-yellow-300 transition-colors duration-300 py-2"
             onClick={toggleMenu}
           >
-            About
+            {t('header.about')}
           </Link>
           <button
             onClick={toggleLanguage}
             className="text-white hover:text-yellow-300 transition-colors duration-300 py-2"
           >
-            {language}
+            {i18n.language === 'en' ? 'EN' : 'AR'}
           </button>
           <Link
             to="/profile"

@@ -1,0 +1,46 @@
+{
+  "header": {
+    "home": "Home",
+    "about": "About",
+    "search": "Search properties...",
+    "profile": "Profile"
+  },
+  "home": {
+    "title": "Find Your Dream Home",
+    "description": "Discover the most luxurious and comfortable properties",
+    "featured": "Featured Properties",
+    "viewMore": "View More"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "We are a leading real estate company dedicated to helping you find your perfect home."
+  },
+  "profile": {
+    "personal": "Personal Information",
+    "listings": "Your Listings",
+    "create": "Create Listing",
+    "signOut": "Sign Out"
+  },
+  "listing": {
+    "price": "Price",
+    "address": "Address",
+    "description": "Description",
+    "features": "Features",
+    "contact": "Contact Owner"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "submit": "Submit"
+  }
+}
